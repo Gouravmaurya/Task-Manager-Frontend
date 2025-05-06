@@ -44,12 +44,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-500">
+    <div className="min-h-screen flex items-center justify-center bg-black py-6 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-500">
       <motion.div 
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
-        className="max-w-md w-full space-y-8 bg-white/5 p-10 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-md">
+        className="max-w-md w-full space-y-8 bg-white/5 p-6 sm:p-10 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-md mx-4">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -58,11 +58,11 @@ export default function RegisterPage() {
           <div className="flex justify-center">
             <motion.div 
               whileHover={{ scale: 1.08, rotate: 2 }}
-              className="h-12 w-12 rounded-full bg-white/10 p-2 flex items-center justify-center border border-white/20">
-              <Image src="/globe.svg" alt="Logo" width={30} height={30} className="text-white" />
+              className="h-10 sm:h-12 w-10 sm:w-12 rounded-full bg-white/10 p-2 flex items-center justify-center border border-white/20">
+              <Image src="/globe.svg" alt="Logo" width={24} height={24} className="sm:w-[30px] sm:h-[30px]" />
             </motion.div>
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-white tracking-tight">Create your account</h2>
+          <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Create your account</h2>
           <p className="mt-2 text-sm text-gray-300">Join us to start managing your tasks</p>
         </motion.div>
         <AnimatePresence>
@@ -101,7 +101,7 @@ export default function RegisterPage() {
                 type="text"
                 autoComplete="username"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 rounded-t-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 sm:text-sm transition-all duration-200"
+                className="appearance-none rounded-none relative block w-full px-3 py-2.5 sm:py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 rounded-t-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 text-sm sm:text-base transition-all duration-200"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -116,7 +116,7 @@ export default function RegisterPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 sm:text-sm transition-all duration-200"
+                className="appearance-none rounded-none relative block w-full px-3 py-2.5 sm:py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 text-sm sm:text-base transition-all duration-200"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -132,7 +132,7 @@ export default function RegisterPage() {
                 autoComplete="new-password"
                 required
                 minLength={6}
-                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 rounded-b-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 sm:text-sm transition-all duration-200"
+                className="appearance-none rounded-none relative block w-full px-3 py-2.5 sm:py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 rounded-b-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 text-sm sm:text-base transition-all duration-200"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -145,7 +145,7 @@ export default function RegisterPage() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-white/20 text-sm font-semibold rounded-md text-white bg-black/90 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 overflow-hidden shadow-lg">
+              className="group relative w-full flex justify-center py-2.5 sm:py-3 px-4 border border-white/20 text-sm sm:text-base font-semibold rounded-md text-white bg-black/90 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 overflow-hidden shadow-lg">
               <motion.span 
                 animate={{ x: loading ? [0, -4, 0, 4, 0] : 0 }}
                 transition={{ repeat: loading ? Infinity : 0, duration: 0.5 }}

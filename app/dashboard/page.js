@@ -478,47 +478,47 @@ export default function DashboardPage() {
     <div className="bg-black min-h-screen text-white transition-colors duration-500">
       <Notification notifications={notifications} onClose={removeNotification} />
       <header className="bg-black border-b border-white/10 shadow-lg">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-white tracking-tight">Task Dashboard</h1>
-          <div className="flex items-center gap-4">
+        <div className="container mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Task Dashboard</h1>
+          <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
             {user && (
-              <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2 border border-white/20 shadow">
-                <div className="bg-white/20 text-white p-2 rounded-full">
-                  <User size={18} />
+              <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 shadow flex-1 sm:flex-none">
+                <div className="bg-white/20 text-white p-1.5 sm:p-2 rounded-full">
+                  <User size={16} className="sm:w-[18px] sm:h-[18px]" />
                 </div>
-                <span className="font-medium text-white/90">{user.username || user.email}</span>
+                <span className="font-medium text-white/90 text-sm sm:text-base truncate">{user.username || user.email}</span>
               </div>
             )}
             <button 
               onClick={handleLogout}
-              className="bg-red-600/70 hover:bg-red-600/50 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/20 shadow">
-              <X size={18} />
+              className="bg-red-600/70 hover:bg-red-600/50 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/20 shadow text-sm sm:text-base whitespace-nowrap">
+              <X size={16} className="sm:w-[18px] sm:h-[18px]" />
               Logout
             </button>
           </div>
         </div>
       </header>
       <div className="container mx-auto p-4">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-          <div className="relative w-full md:w-1/2">
+        <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="relative w-full">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={20} className="text-white/40" />
+              <Search size={18} className="text-white/40" />
             </div>
             <input
               type="text"
               placeholder="Search tasks by title or description..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-full bg-black border border-white/20 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white placeholder-white/40 transition-all duration-200 shadow"
+              className="pl-10 w-full bg-black border border-white/20 p-2.5 sm:p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white placeholder-white/40 transition-all duration-200 shadow text-sm sm:text-base"
             />
           </div>
-          <div className="flex gap-2 w-full md:w-auto">
+          <div className="flex flex-wrap gap-2">
             <div className="relative">
               <button
                 onClick={() => setShowPriorityFilter(!showPriorityFilter)}
-                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 border border-white/20 shadow"
+                className="bg-white/10 hover:bg-white/20 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 border border-white/20 shadow text-sm sm:text-base"
               >
-                <Filter size={18} />
+                <Filter size={16} className="sm:w-[18px] sm:h-[18px]" />
                 Priority
               </button>
               {showPriorityFilter && (
@@ -530,7 +530,7 @@ export default function DashboardPage() {
                   className="absolute right-0 mt-2 w-48 bg-black/90 rounded-lg shadow-lg border border-white/20 z-10">
                   <div className="p-2">
                     <div 
-                      className={`px-4 py-2 text-sm rounded cursor-pointer ${priorityFilter === 'all' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10'}`}
+                      className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm rounded cursor-pointer ${priorityFilter === 'all' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10'}`}
                       onClick={() => {
                         setPriorityFilter('all');
                         setShowPriorityFilter(false);
@@ -539,7 +539,7 @@ export default function DashboardPage() {
                       All Priorities
                     </div>
                     <div 
-                      className={`px-4 py-2 text-sm rounded cursor-pointer ${priorityFilter === 'high' ? 'bg-white/10 text-red-400' : 'text-white/70 hover:bg-white/10'}`}
+                      className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm rounded cursor-pointer ${priorityFilter === 'high' ? 'bg-white/10 text-red-400' : 'text-white/70 hover:bg-white/10'}`}
                       onClick={() => {
                         setPriorityFilter('high');
                         setShowPriorityFilter(false);
@@ -548,7 +548,7 @@ export default function DashboardPage() {
                       High Priority
                     </div>
                     <div 
-                      className={`px-4 py-2 text-sm rounded cursor-pointer ${priorityFilter === 'medium' ? 'bg-white/10 text-yellow-400' : 'text-white/70 hover:bg-white/10'}`}
+                      className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm rounded cursor-pointer ${priorityFilter === 'medium' ? 'bg-white/10 text-yellow-400' : 'text-white/70 hover:bg-white/10'}`}
                       onClick={() => {
                         setPriorityFilter('medium');
                         setShowPriorityFilter(false);
@@ -557,7 +557,7 @@ export default function DashboardPage() {
                       Medium Priority
                     </div>
                     <div 
-                      className={`px-4 py-2 text-sm rounded cursor-pointer ${priorityFilter === 'low' ? 'bg-white/10 text-green-400' : 'text-white/70 hover:bg-white/10'}`}
+                      className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm rounded cursor-pointer ${priorityFilter === 'low' ? 'bg-white/10 text-green-400' : 'text-white/70 hover:bg-white/10'}`}
                       onClick={() => {
                         setPriorityFilter('low');
                         setShowPriorityFilter(false);
@@ -571,18 +571,18 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => setShowForm(true)}
-              className="bg-blue-700/70 hover:bg-blue-700/50 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/20 shadow"
+              className="bg-blue-700/70 hover:bg-blue-700/50 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/20 shadow text-sm sm:text-base"
             >
-              <Plus size={18} />
+              <Plus size={16} className="sm:w-[18px] sm:h-[18px]" />
               Add Task
             </button>
           </div>
         </div>
 
         {showForm && (
-          <div className="bg-black rounded-lg border border-gray-800 mb-6 p-6 animate-fade-in">
-            <h2 className="text-xl font-bold mb-4 text-white">{isEditing ? 'Edit Task' : 'Create New Task'}</h2>
-            <form onSubmit={handleSubmitTask} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-black rounded-lg border border-gray-800 mb-4 sm:mb-6 p-4 sm:p-6 animate-fade-in">
+            <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-white">{isEditing ? 'Edit Task' : 'Create New Task'}</h2>
+            <form onSubmit={handleSubmitTask} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-300 mb-1">Title*</label>
                 <input
@@ -592,7 +592,7 @@ export default function DashboardPage() {
                   onChange={handleInputChange}
                   placeholder="Task Title"
                   required
-                  className="w-full bg-black border border-gray-800 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white placeholder-gray-500"
+                  className="w-full bg-black border border-gray-800 p-2 sm:p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white placeholder-gray-500 text-sm sm:text-base"
                 />
               </div>
               <div className="md:col-span-2">
@@ -603,7 +603,7 @@ export default function DashboardPage() {
                   onChange={handleInputChange}
                   placeholder="Task Description"
                   required
-                  className="w-full bg-black border border-gray-800 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white placeholder-gray-500 min-h-20"
+                  className="w-full bg-black border border-gray-800 p-2 sm:p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white placeholder-gray-500 min-h-20 text-sm sm:text-base"
                 />
               </div>
               <div>
@@ -614,7 +614,7 @@ export default function DashboardPage() {
                   value={taskForm.dueDate}
                   onChange={handleInputChange}
                   required
-                  className="w-full bg-black border border-gray-800 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white"
+                  className="w-full bg-black border border-gray-800 p-2 sm:p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white text-sm sm:text-base"
                 />
               </div>
               <div>
@@ -623,7 +623,7 @@ export default function DashboardPage() {
                   name="priority"
                   value={taskForm.priority}
                   onChange={handleInputChange}
-                  className="w-full bg-black border border-gray-800 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white"
+                  className="w-full bg-black border border-gray-800 p-2 sm:p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white text-sm sm:text-base"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -637,7 +637,7 @@ export default function DashboardPage() {
                   value={taskForm.assignedTo}
                   onChange={handleInputChange}
                   required
-                  className="w-full bg-black border border-gray-800 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white"
+                  className="w-full bg-black border border-gray-800 p-2 sm:p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white text-sm sm:text-base"
                 >
                   <option value="">Select Assignee</option>
                   {users.map(user => (
@@ -651,7 +651,7 @@ export default function DashboardPage() {
                   name="status"
                   value={taskForm.status}
                   onChange={handleInputChange}
-                  className="w-full bg-black border border-gray-800 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white"
+                  className="w-full bg-black border border-gray-800 p-2 sm:p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white text-sm sm:text-base"
                 >
                   <option value="todo">Todo</option>
                   <option value="in progress">In Progress</option>
@@ -662,16 +662,16 @@ export default function DashboardPage() {
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="bg-white hover:bg-gray-200 text-black px-6 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 font-medium"
+                    className="bg-white hover:bg-gray-200 text-black px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center gap-2 font-medium text-sm sm:text-base"
                   >
                     {isEditing ? (
                       <>
-                        <CheckCircle size={18} />
+                        <CheckCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
                         Update Task
                       </>
                     ) : (
                       <>
-                        <Plus size={18} />
+                        <Plus size={16} className="sm:w-[18px] sm:h-[18px]" />
                         Create Task
                       </>
                     )}
@@ -680,9 +680,9 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={resetForm}
-                      className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 font-medium"
+                      className="bg-gray-700 hover:bg-gray-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center gap-2 font-medium text-sm sm:text-base"
                     >
-                      <X size={18} />
+                      <X size={16} className="sm:w-[18px] sm:h-[18px]" />
                       Cancel Edit
                     </button>
                   )}
@@ -692,89 +692,89 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="mb-6 bg-black rounded-lg border border-gray-800 overflow-hidden">
+        <div className="mb-4 sm:mb-6 bg-black rounded-lg border border-gray-800 overflow-hidden">
           <div className="flex border-b border-gray-800 overflow-x-auto">
             <button 
               onClick={() => setActiveTab('all')} 
-              className={`py-3 px-6 flex items-center gap-2 font-medium transition-colors duration-200 ${
+              className={`py-2 sm:py-3 px-4 sm:px-6 flex items-center gap-1 sm:gap-2 font-medium transition-colors duration-200 text-sm sm:text-base whitespace-nowrap ${
                 activeTab === 'all' 
                   ? 'text-white border-b-2 border-white' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Inbox size={18} />
+              <Inbox size={16} className="sm:w-[18px] sm:h-[18px]" />
               All Tasks ({tasks.length})
               {priorityFilter !== 'all' && (
-                <span className="text-xs bg-gray-700 rounded-full px-2 py-0.5">
+                <span className="text-xs bg-gray-700 rounded-full px-1.5 sm:px-2 py-0.5">
                   {priorityFilter}
                 </span>
               )}
             </button>
             <button 
               onClick={() => setActiveTab('assigned')} 
-              className={`py-3 px-6 flex items-center gap-2 font-medium transition-colors duration-200 ${
+              className={`py-2 sm:py-3 px-4 sm:px-6 flex items-center gap-1 sm:gap-2 font-medium transition-colors duration-200 text-sm sm:text-base whitespace-nowrap ${
                 activeTab === 'assigned' 
                   ? 'text-white border-b-2 border-white' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <User size={18} />
+              <User size={16} className="sm:w-[18px] sm:h-[18px]" />
               Assigned to Me
             </button>
             <button 
               onClick={() => setActiveTab('created')} 
-              className={`py-3 px-6 flex items-center gap-2 font-medium transition-colors duration-200 ${
+              className={`py-2 sm:py-3 px-4 sm:px-6 flex items-center gap-1 sm:gap-2 font-medium transition-colors duration-200 text-sm sm:text-base whitespace-nowrap ${
                 activeTab === 'created' 
                   ? 'text-white border-b-2 border-white' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <CheckCircle size={18} />
+              <CheckCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
               Created by Me
             </button>
             <button 
               onClick={() => setActiveTab('overdue')} 
-              className={`py-3 px-6 flex items-center gap-2 font-medium transition-colors duration-200 ${
+              className={`py-2 sm:py-3 px-4 sm:px-6 flex items-center gap-1 sm:gap-2 font-medium transition-colors duration-200 text-sm sm:text-base whitespace-nowrap ${
                 activeTab === 'overdue' 
                   ? 'text-red-400 border-b-2 border-red-400' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <AlertCircle size={18} />
+              <AlertCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
               Overdue
             </button>
           </div>
         </div>
 
         {isTaskLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {[1, 2, 3].map((index) => (
-              <div key={index} className="bg-white/5 rounded-lg border border-white/10 p-5 animate-pulse">
+              <div key={index} className="bg-white/5 rounded-lg border border-white/10 p-4 sm:p-5 animate-pulse">
                 <div className="flex justify-between items-start mb-3">
-                  <div className="h-6 w-3/4 bg-white/10 rounded"></div>
-                  <div className="h-6 w-16 bg-white/10 rounded-full"></div>
+                  <div className="h-5 sm:h-6 w-3/4 bg-white/10 rounded"></div>
+                  <div className="h-5 sm:h-6 w-16 bg-white/10 rounded-full"></div>
                 </div>
                 <div className="space-y-2 mb-4">
-                  <div className="h-4 w-full bg-white/10 rounded"></div>
-                  <div className="h-4 w-2/3 bg-white/10 rounded"></div>
+                  <div className="h-3 sm:h-4 w-full bg-white/10 rounded"></div>
+                  <div className="h-3 sm:h-4 w-2/3 bg-white/10 rounded"></div>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-4 w-1/2 bg-white/10 rounded"></div>
-                  <div className="h-4 w-1/3 bg-white/10 rounded"></div>
+                  <div className="h-3 sm:h-4 w-1/2 bg-white/10 rounded"></div>
+                  <div className="h-3 sm:h-4 w-1/3 bg-white/10 rounded"></div>
                 </div>
               </div>
             ))}
           </div>
         ) : filteredTasks.length === 0 ? (
-          <div className="bg-black rounded-lg border border-white/10 p-8 text-center">
-            <Clock size={48} className="mx-auto text-white/40 mb-4" />
-            <h3 className="text-xl font-medium text-white/70 mb-1">No tasks found</h3>
-            <p className="text-white/50">
+          <div className="bg-black rounded-lg border border-white/10 p-6 sm:p-8 text-center">
+            <Clock size={40} className="mx-auto text-white/40 mb-3 sm:mb-4" />
+            <h3 className="text-lg sm:text-xl font-medium text-white/70 mb-1">No tasks found</h3>
+            <p className="text-white/50 text-sm sm:text-base">
               {searchQuery ? 'Try adjusting your search query' : 'Create a new task to get started'}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {filteredTasks.map(task => {
               const isValidDate = task.dueDate && !isNaN(new Date(task.dueDate).getTime());
               const dueDate = isValidDate ? new Date(task.dueDate) : null;
@@ -791,20 +791,20 @@ export default function DashboardPage() {
                     isDeleting === task._id ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
                   }`}
                 >
-                  <div className="p-5">
+                  <div className="p-4 sm:p-5">
                     <div className="flex justify-between items-start mb-3">
-                      <h2 className="text-xl font-bold text-white truncate">{task.title || 'No Title'}</h2>
+                      <h2 className="text-lg sm:text-xl font-bold text-white truncate">{task.title || 'No Title'}</h2>
                       <span className={`text-xs font-medium rounded-full px-2 py-1 border ${getPriorityColor(task.priority)}`}>
                         {task.priority || 'N/A'}
                       </span>
                     </div>
                     
-                    <p className="text-gray-400 mb-4 line-clamp-2">{task.description || 'No Description'}</p>
+                    <p className="text-gray-400 mb-4 line-clamp-2 text-sm sm:text-base">{task.description || 'No Description'}</p>
                     
                     <div className="flex flex-wrap gap-y-2 mb-4">
                       <div className="w-full flex items-center gap-2">
-                        <Clock size={16} className={isOverdue ? 'text-red-400' : 'text-gray-500'} />
-                        <span className={isOverdue ? 'text-red-400 font-medium' : 'text-gray-400'}>
+                        <Clock size={14} className={`sm:w-[16px] sm:h-[16px] ${isOverdue ? 'text-red-400' : 'text-gray-500'}`} />
+                        <span className={`text-sm sm:text-base ${isOverdue ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
                           {isValidDate 
                             ? `Due: ${dueDate.toLocaleDateString()}` 
                             : 'Invalid Date'}
@@ -819,19 +819,19 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     
-                    <div className="flex flex-col gap-2 text-sm text-gray-400">
+                    <div className="flex flex-col gap-2 text-xs sm:text-sm text-gray-400">
                       <p>Created by: {task.createdBy ? (task.createdBy.username || task.createdBy.email) : 'N/A'}</p>
                       <p>Assigned to: {task.assignedTo || 'N/A'}</p>
                     </div>
                   </div>
                   
-                  <div className="border-t border-gray-800 px-5 py-3 bg-black flex">
+                  <div className="border-t border-gray-800 px-4 sm:px-5 py-2 sm:py-3 bg-black flex">
                     <button
                       onClick={() => handleEditTask(task)}
-                      className="w-1/2 text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 flex items-center justify-center gap-2"
+                      className="w-1/2 text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
                       disabled={isDeleting === task._id}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-[16px] sm:h-[16px]">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                       </svg>
@@ -840,10 +840,10 @@ export default function DashboardPage() {
                     <div className="w-px bg-gray-800"></div>
                     <button
                       onClick={() => handleDeleteTask(task._id)}
-                      className="w-1/2 text-red-400 hover:text-red-300 font-medium transition-colors duration-200 flex items-center justify-center gap-2"
+                      className="w-1/2 text-red-400 hover:text-red-300 font-medium transition-colors duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
                       disabled={isDeleting === task._id}
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} className="sm:w-[16px] sm:h-[16px]" />
                       {isDeleting === task._id ? 'Deleting...' : 'Delete'}
                     </button>
                   </div>
