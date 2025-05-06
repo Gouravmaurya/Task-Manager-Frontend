@@ -3,8 +3,8 @@ import './globals.css';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Next App Router with Tailwind',
-  description: 'Basic App using Next.js 13+ App Router and Tailwind',
+  title: 'TaskZen',
+  description: 'TaskZen is a task management system that allows you to manage your tasks and projects.',
 };
 
 export default function RootLayout({ children }) {

@@ -101,7 +101,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black py-6 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-500">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black py-6 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-500">
+      <motion.h1 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-4xl sm:text-5xl font-bold text-white mb-8 tracking-tight"
+      >
+        TaskZen
+      </motion.h1>
       <motion.div 
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}

@@ -586,7 +586,7 @@ export default function DashboardPage() {
     <div className="bg-black min-h-screen text-white transition-colors duration-500">
       <header className="bg-black border-b border-white/10 shadow-lg">
         <div className="container mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Task Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">TaskZen Dashboard</h1>
           <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
             {user && (
               <div className="flex items-center gap-2">
