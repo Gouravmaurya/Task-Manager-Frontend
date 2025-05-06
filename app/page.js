@@ -11,12 +11,50 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(''); // Added state for displaying errors
+  const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!email) {
+      setEmailError('Email is required');
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      setEmailError('Please enter a valid email address');
+      return false;
+    }
+    setEmailError('');
+    return true;
+  };
+
+  const validatePassword = (password) => {
+    if (!password) {
+      setPasswordError('Password is required');
+      return false;
+    }
+    if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      return false;
+    }
+    setPasswordError('');
+    return true;
+  };
 
   async function handleLogin(e) {
     e.preventDefault();
     setLoading(true);
-    setError(''); // Clear previous errors
+    setError('');
+
+    // Validate email and password
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+
+    if (!isEmailValid || !isPasswordValid) {
+      setLoading(false);
+      return;
+    }
 
     try {
       // Make API call to your backend login endpoint
@@ -120,11 +158,18 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2.5 sm:py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 rounded-t-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 text-sm sm:text-base transition-all duration-200"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2.5 sm:py-3 border ${emailError ? 'border-red-500' : 'border-white/20'} placeholder-gray-400 text-white bg-black/80 rounded-t-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 text-sm sm:text-base transition-all duration-200`}
                 placeholder="Email address"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  validateEmail(e.target.value);
+                }}
+                onBlur={(e) => validateEmail(e.target.value)}
               />
+              {emailError && (
+                <p className="mt-1 text-sm text-red-400">{emailError}</p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="sr-only">Password</label>
@@ -136,11 +181,18 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 required
                 minLength={6}
-                className="appearance-none rounded-none relative block w-full px-3 py-2.5 sm:py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 rounded-b-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 text-sm sm:text-base transition-all duration-200"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2.5 sm:py-3 border ${passwordError ? 'border-red-500' : 'border-white/20'} placeholder-gray-400 text-white bg-black/80 rounded-b-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 text-sm sm:text-base transition-all duration-200`}
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  validatePassword(e.target.value);
+                }}
+                onBlur={(e) => validatePassword(e.target.value)}
               />
+              {passwordError && (
+                <p className="mt-1 text-sm text-red-400">{passwordError}</p>
+              )}
             </div>
           </div>
           {/* <div className="flex items-center justify-between">

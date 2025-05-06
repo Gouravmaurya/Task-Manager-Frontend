@@ -33,6 +33,7 @@ export default function DashboardPage() {
   const [showPriorityFilter, setShowPriorityFilter] = useState(false);
   const [isTaskLoading, setIsTaskLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -54,12 +55,17 @@ export default function DashboardPage() {
       // Listen for task assignments
       socket.on('task:assigned', (data) => {
         if (data.assignedTo === JSON.parse(storedUser).username) {
-          addNotification({
+          const notification = {
             id: uuidv4(),
             type: 'info',
             title: 'New Task Assigned',
-            message: `You have been assigned to "${data.title}"`
-          });
+            message: `You have been assigned to "${data.title}"`,
+            taskId: data._id,
+            timestamp: new Date().toISOString(),
+            read: false
+          };
+          addNotification(notification);
+          setUnreadNotifications(prev => prev + 1);
         }
       });
 
@@ -378,7 +384,7 @@ export default function DashboardPage() {
     const today = new Date();
     const searchLower = searchQuery.toLowerCase();
     
-    return tasks.filter(task => {
+    const filtered = tasks.filter(task => {
       const matchesSearch = 
         searchQuery === '' || 
         task.title?.toLowerCase().includes(searchLower) || 
@@ -400,6 +406,13 @@ export default function DashboardPage() {
         default:
           return true;
       }
+    });
+
+    // Sort tasks by creation date in reverse order (newest first)
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt || a._id);
+      const dateB = new Date(b.createdAt || b._id);
+      return dateB - dateA;
     });
   };
 
@@ -424,11 +437,29 @@ export default function DashboardPage() {
   };
 
   const addNotification = (notification) => {
-    setNotifications(prev => [...prev, notification]);
+    setNotifications(prev => [notification, ...prev]);
   };
 
   const removeNotification = (id) => {
     setNotifications(prev => prev.filter(notification => notification.id !== id));
+  };
+
+  const markNotificationAsRead = (id) => {
+    setNotifications(prev => 
+      prev.map(notification => 
+        notification.id === id 
+          ? { ...notification, read: true }
+          : notification
+      )
+    );
+    setUnreadNotifications(prev => Math.max(0, prev - 1));
+  };
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications(prev => 
+      prev.map(notification => ({ ...notification, read: true }))
+    );
+    setUnreadNotifications(0);
   };
 
   if (isLoading) {
@@ -476,7 +507,13 @@ export default function DashboardPage() {
 
   return (
     <div className="bg-black min-h-screen text-white transition-colors duration-500">
-      <Notification notifications={notifications} onClose={removeNotification} />
+      <Notification 
+        notifications={notifications} 
+        onClose={removeNotification}
+        onMarkAsRead={markNotificationAsRead}
+        onMarkAllAsRead={markAllNotificationsAsRead}
+        unreadCount={unreadNotifications}
+      />
       <header className="bg-black border-b border-white/10 shadow-lg">
         <div className="container mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Task Dashboard</h1>
