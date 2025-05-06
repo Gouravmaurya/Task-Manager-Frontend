@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchWithAuth } from '../../lib/api';
-import { Search, Inbox, CheckCircle, Clock, User, AlertCircle, Plus, X, Trash2, Filter } from 'lucide-react';
+import { Search, Inbox, CheckCircle, Clock, User, AlertCircle, Plus, X, Trash2, Filter, Bell, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { initSocket, getSocket, disconnectSocket } from '../lib/socket';
 import Notification from '../components/Notification';
@@ -34,6 +34,20 @@ export default function DashboardPage() {
   const [isTaskLoading, setIsTaskLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+  const notificationRef = useRef(null);
+
+  // Add formatTimestamp function
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return date.toLocaleDateString();
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -44,17 +58,25 @@ export default function DashboardPage() {
     }
 
     try {
-      setUser(JSON.parse(storedUser));
+      const currentUser = JSON.parse(storedUser);
+      setUser(currentUser);
       fetchTasks();
       fetchUsers();
       setIsLoading(false);
 
       // Initialize socket connection
       const socket = initSocket(token);
+      console.log('Socket initialized:', socket.connected);
 
       // Listen for task assignments
       socket.on('task:assigned', (data) => {
-        if (data.assignedTo === JSON.parse(storedUser).username) {
+        console.log('Task assigned event received:', data);
+        console.log('Current user:', currentUser);
+        console.log('Task assigned to:', data.assignedTo);
+        
+        // Check if the task is assigned to the current user
+        if (data.assignedTo === currentUser.username) {
+          console.log('Creating notification for assigned task');
           const notification = {
             id: uuidv4(),
             type: 'info',
@@ -71,29 +93,56 @@ export default function DashboardPage() {
 
       // Listen for task updates
       socket.on('task:updated', (data) => {
-        if (data.assignedTo === JSON.parse(storedUser).username) {
-          addNotification({
+        console.log('Task updated event received:', data);
+        if (data.assignedTo === currentUser.username) {
+          const notification = {
             id: uuidv4(),
             type: 'info',
             title: 'Task Updated',
-            message: `Task "${data.title}" has been updated`
-          });
+            message: `Task "${data.title}" has been updated`,
+            taskId: data._id,
+            timestamp: new Date().toISOString(),
+            read: false
+          };
+          addNotification(notification);
+          setUnreadNotifications(prev => prev + 1);
         }
       });
 
       // Listen for task completion
       socket.on('task:done', (data) => {
-        if (data.assignedTo === JSON.parse(storedUser).username) {
-          addNotification({
+        console.log('Task done event received:', data);
+        if (data.assignedTo === currentUser.username) {
+          const notification = {
             id: uuidv4(),
             type: 'success',
             title: 'Task Done',
-            message: `Task "${data.title}" has been marked as done`
-          });
+            message: `Task "${data.title}" has been marked as done`,
+            taskId: data._id,
+            timestamp: new Date().toISOString(),
+            read: false
+          };
+          addNotification(notification);
+          setUnreadNotifications(prev => prev + 1);
         }
       });
 
+      // Add a test notification on component mount
+      setTimeout(() => {
+        const testNotification = {
+          id: uuidv4(),
+          type: 'info',
+          title: 'Welcome',
+          message: 'You are now connected to the task manager',
+          timestamp: new Date().toISOString(),
+          read: false
+        };
+        addNotification(testNotification);
+        setUnreadNotifications(prev => prev + 1);
+      }, 1000);
+
       return () => {
+        console.log('Cleaning up socket connection');
         disconnectSocket();
       };
     } catch (error) {
@@ -103,6 +152,20 @@ export default function DashboardPage() {
       router.push('/');
     }
   }, [router]);
+
+  // Add click outside handler
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotificationDropdown(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -350,6 +413,15 @@ export default function DashboardPage() {
       const newTask = await response.json();
 
       if (response.ok) {
+        // Emit socket event for task assignment
+        const socket = getSocket();
+        if (socket) {
+          socket.emit('task:created', {
+            ...newTask,
+            assignedTo: taskForm.assignedTo
+          });
+        }
+
         fetchTasks();
         resetForm();
         addNotification({
@@ -437,7 +509,12 @@ export default function DashboardPage() {
   };
 
   const addNotification = (notification) => {
-    setNotifications(prev => [notification, ...prev]);
+    console.log('Adding notification to state:', notification); // Debug log
+    setNotifications(prev => {
+      const newNotifications = [notification, ...prev];
+      console.log('New notifications state:', newNotifications); // Debug log
+      return newNotifications;
+    });
   };
 
   const removeNotification = (id) => {
@@ -507,28 +584,111 @@ export default function DashboardPage() {
 
   return (
     <div className="bg-black min-h-screen text-white transition-colors duration-500">
-      <Notification 
-        notifications={notifications} 
-        onClose={removeNotification}
-        onMarkAsRead={markNotificationAsRead}
-        onMarkAllAsRead={markAllNotificationsAsRead}
-        unreadCount={unreadNotifications}
-      />
       <header className="bg-black border-b border-white/10 shadow-lg">
         <div className="container mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Task Dashboard</h1>
           <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
             {user && (
-              <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 shadow flex-1 sm:flex-none">
-                <div className="bg-white/20 text-white p-1.5 sm:p-2 rounded-full">
-                  <User size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 shadow flex-1 sm:flex-none">
+                  <div className="bg-white/20 text-white p-1.5 sm:p-2 rounded-full">
+                    <User size={16} className="sm:w-[18px] sm:h-[18px]" />
+                  </div>
+                  <span className="font-medium text-white/90 text-sm sm:text-base truncate">{user.username || user.email}</span>
                 </div>
-                <span className="font-medium text-white/90 text-sm sm:text-base truncate">{user.username || user.email}</span>
+                
+                {/* Notification Bell */}
+                <div className="relative" ref={notificationRef}>
+                  <button
+                    onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
+                    className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full border border-white/20 shadow relative"
+                  >
+                    <Bell size={20} />
+                    {unreadNotifications > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {unreadNotifications}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Notification Dropdown */}
+                  {showNotificationDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute right-0 mt-2 w-80 bg-black/95 border border-white/20 rounded-lg shadow-lg z-50"
+                    >
+                      <div className="p-3 border-b border-white/10 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <Bell size={16} className="text-white/70" />
+                          <span className="text-white/70 text-sm">
+                            {unreadNotifications} unread {unreadNotifications === 1 ? 'notification' : 'notifications'}
+                          </span>
+                        </div>
+                        {unreadNotifications > 0 && (
+                          <button
+                            onClick={markAllNotificationsAsRead}
+                            className="text-white/70 hover:text-white text-sm flex items-center gap-1"
+                          >
+                            <Check size={14} />
+                            Mark all as read
+                          </button>
+                        )}
+                      </div>
+                      <div className="max-h-96 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <div className="p-4 text-center text-white/50 text-sm">
+                            No notifications
+                          </div>
+                        ) : (
+                          notifications.map((notification) => (
+                            <div
+                              key={notification.id}
+                              className={`p-3 border-b border-white/10 hover:bg-white/5 transition-colors ${
+                                !notification.read ? 'bg-white/5' : ''
+                              }`}
+                            >
+                              <div className="flex justify-between items-start gap-2">
+                                <div className="flex-1">
+                                  <h3 className="font-medium text-sm mb-1">{notification.title}</h3>
+                                  <p className="text-sm text-white/70">{notification.message}</p>
+                                  <p className="text-xs text-white/50 mt-1">
+                                    {formatTimestamp(notification.timestamp)}
+                                  </p>
+                                </div>
+                                <div className="flex items-start gap-1">
+                                  {!notification.read && (
+                                    <button
+                                      onClick={() => markNotificationAsRead(notification.id)}
+                                      className="text-white/50 hover:text-white"
+                                      title="Mark as read"
+                                    >
+                                      <Check size={14} />
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => removeNotification(notification.id)}
+                                    className="text-white/50 hover:text-white"
+                                    title="Close"
+                                  >
+                                    <X size={14} />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
               </div>
             )}
             <button 
               onClick={handleLogout}
-              className="bg-red-600/70 hover:bg-red-600/50 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/20 shadow text-sm sm:text-base whitespace-nowrap">
+              className="bg-red-600/70 hover:bg-red-600/50 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/20 shadow text-sm sm:text-base whitespace-nowrap"
+            >
               <X size={16} className="sm:w-[18px] sm:h-[18px]" />
               Logout
             </button>
