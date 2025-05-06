@@ -76,13 +76,13 @@ export default function DashboardPage() {
       });
 
       // Listen for task completion
-      socket.on('task:completed', (data) => {
+      socket.on('task:done', (data) => {
         if (data.assignedTo === JSON.parse(storedUser).username) {
           addNotification({
             id: uuidv4(),
             type: 'success',
-            title: 'Task Completed',
-            message: `Task "${data.title}" has been marked as completed`
+            title: 'Task Done',
+            message: `Task "${data.title}" has been marked as done`
           });
         }
       });
@@ -396,7 +396,7 @@ export default function DashboardPage() {
         case 'created':
           return task.createdBy && task.createdBy._id === user._id;
         case 'overdue':
-          return task.dueDate && new Date(task.dueDate) < today && task.status !== 'completed';
+          return task.dueDate && new Date(task.dueDate) < today && task.status !== 'done';
         default:
           return true;
       }
@@ -416,7 +416,7 @@ export default function DashboardPage() {
 
   const getStatusColor = (status) => {
     switch(status?.toLowerCase()) {
-      case 'completed': return 'bg-green-500/10 text-green-400 border-green-500/30';
+      case 'done': return 'bg-green-500/10 text-green-400 border-green-500/30';
       case 'in progress': return 'bg-blue-500/10 text-blue-400 border-blue-500/30';
       case 'todo': return 'bg-gray-500/10 text-gray-400 border-gray-500/30';
       default: return 'bg-gray-500/10 text-gray-400 border-gray-500/30';
@@ -655,7 +655,7 @@ export default function DashboardPage() {
                 >
                   <option value="todo">Todo</option>
                   <option value="in progress">In Progress</option>
-                  <option value="completed">Completed</option>
+                  <option value="done">Done</option>
                 </select>
               </div>
               <div className="md:col-span-2 flex justify-end">
@@ -778,7 +778,7 @@ export default function DashboardPage() {
             {filteredTasks.map(task => {
               const isValidDate = task.dueDate && !isNaN(new Date(task.dueDate).getTime());
               const dueDate = isValidDate ? new Date(task.dueDate) : null;
-              const isOverdue = dueDate && dueDate < new Date() && task.status !== 'completed';
+              const isOverdue = dueDate && dueDate < new Date() && task.status !== 'done';
               
               return (
                 <motion.div 
