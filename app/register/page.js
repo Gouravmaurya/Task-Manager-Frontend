@@ -1,66 +1,47 @@
 'use client';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function LoginPage() {
-  const router = useRouter();
+export default function RegisterPage() {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(''); // Added state for displaying errors
 
-  async function handleLogin(e) {
+  const router = useRouter();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(''); // Clear previous errors
 
     try {
-      // Make API call to your backend login endpoint
-      const response = await fetch('http://localhost:5000/api/users/login', {
+      const response = await fetch('http://localhost:5000/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle errors returned from the API (e.g., invalid credentials)
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.message || 'Registration failed');
       }
 
-      // Store both the token and user details in localStorage
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-      } else {
-        throw new Error('No authentication token received');
-      }
-      
-      // Store user details if available
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-      } else {
-        // If the backend guarantees a user object on successful login, 
-        // this error indicates an unexpected backend response.
-        throw new Error('User information missing from login response.'); 
-      }
-      // Removed the problematic block that overwrote user data
-
-      router.push('/dashboard'); // Redirect to dashboard on successful login
-
-    } catch (error) {
-      console.error('Login error:', error);
-      setError(error.message); // Set error message to display to the user
-      // Display error in UI instead of alert for better UX
+      router.push('/'); // Redirect to login page on successful registration
+    } catch (err) {
+      console.error('Registration error:', err);
+      setError(err.message); // Set error message to display to the user
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-500">
@@ -81,8 +62,8 @@ export default function LoginPage() {
               <Image src="/globe.svg" alt="Logo" width={30} height={30} className="text-white" />
             </motion.div>
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-white tracking-tight">Sign in to your account</h2>
-          <p className="mt-2 text-sm text-gray-300">Access your dashboard and manage your tasks</p>
+          <h2 className="mt-6 text-3xl font-extrabold text-white tracking-tight">Create your account</h2>
+          <p className="mt-2 text-sm text-gray-300">Join us to start managing your tasks</p>
         </motion.div>
         <AnimatePresence>
           {error && (
@@ -109,8 +90,23 @@ export default function LoginPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
           className="mt-8 space-y-6" 
-          onSubmit={handleLogin}>
+          onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="username" className="sr-only">Username</label>
+              <motion.input
+                whileFocus={{ scale: 1.01 }}
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 rounded-t-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 sm:text-sm transition-all duration-200"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
             <div>
               <label htmlFor="email" className="sr-only">Email address</label>
               <motion.input
@@ -120,7 +116,7 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 rounded-t-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 sm:text-sm transition-all duration-200"
+                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 sm:text-sm transition-all duration-200"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -133,7 +129,7 @@ export default function LoginPage() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
                 minLength={6}
                 className="appearance-none rounded-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-400 text-white bg-black/80 rounded-b-md focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 focus:z-10 sm:text-sm transition-all duration-200"
@@ -143,28 +139,6 @@ export default function LoginPage() {
               />
             </div>
           </div>
-          {/* <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <motion.input
-                whileHover={{ scale: 1.2 }}
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-white focus:ring-white border-white/20 rounded bg-black/80"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
-                Remember me
-              </label>
-            </div>
-            <div className="text-sm">
-              <motion.a 
-                whileHover={{ scale: 1.05 }}
-                href="#" 
-                className="font-medium text-white/80 hover:text-white">
-                Forgot your password?
-              </motion.a>
-            </div>
-          </div> */}
           <div>
             <motion.button
               whileHover={{ scale: 1.03 }}
@@ -180,7 +154,7 @@ export default function LoginPage() {
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
               </motion.span>
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Creating account...' : 'Create account'}
             </motion.button>
           </div>
         </motion.form>
@@ -189,10 +163,10 @@ export default function LoginPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
           className="text-sm text-center mt-6">
-          <span className="text-gray-400">Don't have an account?</span>{' '}
+          <span className="text-gray-400">Already have an account?</span>{' '}
           <motion.div whileHover={{ scale: 1.05 }} className="inline-block">
-            <Link href="/register" className="font-medium text-white/80 hover:text-white">
-              Sign up now
+            <Link href="/" className="font-medium text-white/80 hover:text-white">
+              Sign in
             </Link>
           </motion.div>
         </motion.div>
