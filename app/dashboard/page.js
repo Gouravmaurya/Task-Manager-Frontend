@@ -36,6 +36,8 @@ export default function DashboardPage() {
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const notificationRef = useRef(null);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const profileRef = useRef(null);
 
   // Add formatTimestamp function
   const formatTimestamp = (timestamp) => {
@@ -158,6 +160,20 @@ export default function DashboardPage() {
     function handleClickOutside(event) {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
         setShowNotificationDropdown(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Add click outside handler for profile dropdown
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileDropdown(false);
       }
     }
 
@@ -585,18 +601,14 @@ export default function DashboardPage() {
   return (
     <div className="bg-black min-h-screen text-white transition-colors duration-500">
       <header className="bg-black border-b border-white/10 shadow-lg">
-        <div className="container mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">TaskZen Dashboard</h1>
-          <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+        <div className="container mx-auto px-4 py-4 sm:py-6">
+          <div className="flex justify-between items-center">
+            {/* Logo/Title - Left side */}
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">TaskZen</h1>
+
+            {/* Profile and Notifications - Right side */}
             {user && (
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 shadow flex-1 sm:flex-none">
-                  <div className="bg-white/20 text-white p-1.5 sm:p-2 rounded-full">
-                    <User size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  </div>
-                  <span className="font-medium text-white/90 text-sm sm:text-base truncate">{user.username || user.email}</span>
-                </div>
-                
                 {/* Notification Bell */}
                 <div className="relative" ref={notificationRef}>
                   <button
@@ -617,7 +629,7 @@ export default function DashboardPage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-80 bg-black/95 border border-white/20 rounded-lg shadow-lg z-50"
+                      className="fixed sm:absolute right-0 sm:right-auto mt-2 w-[calc(100vw-2rem)] sm:w-80 bg-black/95 border border-white/20 rounded-lg shadow-lg z-50 max-h-[calc(100vh-8rem)] sm:max-h-96 overflow-hidden"
                     >
                       <div className="p-3 border-b border-white/10 flex justify-between items-center">
                         <div className="flex items-center gap-2">
@@ -632,11 +644,12 @@ export default function DashboardPage() {
                             className="text-white/70 hover:text-white text-sm flex items-center gap-1"
                           >
                             <Check size={14} />
-                            Mark all as read
+                            <span className="hidden sm:inline">Mark all as read</span>
+                            <span className="sm:hidden">Mark all</span>
                           </button>
                         )}
                       </div>
-                      <div className="max-h-96 overflow-y-auto">
+                      <div className="overflow-y-auto max-h-[calc(100vh-12rem)] sm:max-h-80">
                         {notifications.length === 0 ? (
                           <div className="p-4 text-center text-white/50 text-sm">
                             No notifications
@@ -650,18 +663,27 @@ export default function DashboardPage() {
                               }`}
                             >
                               <div className="flex justify-between items-start gap-2">
-                                <div className="flex-1">
-                                  <h3 className="font-medium text-sm mb-1">{notification.title}</h3>
-                                  <p className="text-sm text-white/70">{notification.message}</p>
-                                  <p className="text-xs text-white/50 mt-1">
-                                    {formatTimestamp(notification.timestamp)}
-                                  </p>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-start gap-2">
+                                    <div className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${
+                                      notification.type === 'error' ? 'bg-red-400' :
+                                      notification.type === 'success' ? 'bg-green-400' :
+                                      'bg-blue-400'
+                                    }`} />
+                                    <div className="flex-1 min-w-0">
+                                      <h3 className="font-medium text-sm mb-1 truncate">{notification.title}</h3>
+                                      <p className="text-sm text-white/70 break-words">{notification.message}</p>
+                                      <p className="text-xs text-white/50 mt-1">
+                                        {formatTimestamp(notification.timestamp)}
+                                      </p>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="flex items-start gap-1">
+                                <div className="flex items-start gap-1 flex-shrink-0">
                                   {!notification.read && (
                                     <button
                                       onClick={() => markNotificationAsRead(notification.id)}
-                                      className="text-white/50 hover:text-white"
+                                      className="text-white/50 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"
                                       title="Mark as read"
                                     >
                                       <Check size={14} />
@@ -669,7 +691,7 @@ export default function DashboardPage() {
                                   )}
                                   <button
                                     onClick={() => removeNotification(notification.id)}
-                                    className="text-white/50 hover:text-white"
+                                    className="text-white/50 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"
                                     title="Close"
                                   >
                                     <X size={14} />
@@ -680,22 +702,88 @@ export default function DashboardPage() {
                           ))
                         )}
                       </div>
+                      {notifications.length > 0 && (
+                        <div className="p-2 border-t border-white/10 bg-black/50">
+                          <button
+                            onClick={() => {
+                              setNotifications([]);
+                              setUnreadNotifications(0);
+                            }}
+                            className="w-full text-center text-white/50 hover:text-white text-sm py-1.5 hover:bg-white/5 rounded transition-colors"
+                          >
+                            Clear all notifications
+                          </button>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Profile Dropdown */}
+                <div className="relative" ref={profileRef}>
+                  <button
+                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 shadow transition-all duration-200"
+                  >
+                    <div className="bg-white/20 text-white p-1.5 sm:p-2 rounded-full">
+                      <User size={16} className="sm:w-[18px] sm:h-[18px]" />
+                    </div>
+                    <span className="hidden sm:inline font-medium text-white/90 text-sm sm:text-base w-40 truncate">{user.username || user.email}</span>
+                  </button>
+
+                  {showProfileDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute right-0 mt-2 w-64 bg-black/95 border border-white/20 rounded-lg shadow-lg z-50"
+                    >
+                      <div className="p-3 border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-white/20 text-white p-2 rounded-full">
+                            <User size={20} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-white truncate">{user.username || user.email}</p>
+                            <p className="text-sm text-white/60 truncate">{user.email}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setShowNotificationDropdown(true);
+                            setShowProfileDropdown(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-white/90 hover:bg-white/10 flex items-center gap-2 transition-colors"
+                        >
+                          <Bell size={18} />
+                          <span>Notifications</span>
+                          {unreadNotifications > 0 && (
+                            <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              {unreadNotifications}
+                            </span>
+                          )}
+                        </button>
+
+                        <button
+                          onClick={handleLogout}
+                          className="w-full px-4 py-2 text-left text-red-400 hover:bg-white/10 flex items-center gap-2 transition-colors"
+                        >
+                          <X size={18} />
+                          <span>Logout</span>
+                        </button>
+                      </div>
                     </motion.div>
                   )}
                 </div>
               </div>
             )}
-            <button 
-              onClick={handleLogout}
-              className="bg-red-600/70 hover:bg-red-600/50 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/20 shadow text-sm sm:text-base whitespace-nowrap"
-            >
-              <X size={16} className="sm:w-[18px] sm:h-[18px]" />
-              Logout
-            </button>
           </div>
         </div>
       </header>
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-2 sm:p-4">
         <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="relative w-full">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -703,7 +791,7 @@ export default function DashboardPage() {
             </div>
             <input
               type="text"
-              placeholder="Search tasks by title or description..."
+              placeholder="Search tasks..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 w-full bg-black border border-white/20 p-2.5 sm:p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30 text-white placeholder-white/40 transition-all duration-200 shadow text-sm sm:text-base"
@@ -716,7 +804,8 @@ export default function DashboardPage() {
                 className="bg-white/10 hover:bg-white/20 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 border border-white/20 shadow text-sm sm:text-base"
               >
                 <Filter size={16} className="sm:w-[18px] sm:h-[18px]" />
-                Priority
+                <span className="hidden sm:inline">Priority</span>
+                <span className="sm:hidden">Filter</span>
               </button>
               {showPriorityFilter && (
                 <motion.div
@@ -771,7 +860,8 @@ export default function DashboardPage() {
               className="bg-blue-700/70 hover:bg-blue-700/50 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/20 shadow text-sm sm:text-base"
             >
               <Plus size={16} className="sm:w-[18px] sm:h-[18px]" />
-              Add Task
+              <span className="hidden sm:inline">Add Task</span>
+              <span className="sm:hidden">Add</span>
             </button>
           </div>
         </div>
