@@ -100,7 +100,7 @@ export default function DashboardPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetchWithAuth('http://localhost:5000/api/users');
+      const response = await fetchWithAuth('/api/users');
       const usersData = await response.json();
       setUsers(usersData);
     } catch (error) {
@@ -111,7 +111,7 @@ export default function DashboardPage() {
   const fetchTasks = async () => {
     setIsTaskLoading(true);
     try {
-      const response = await fetchWithAuth('http://localhost:5000/api/tasks');
+      const response = await fetchWithAuth('/api/tasks');
       const data = await response.json();
       setTasks(data);
     } catch (error) {
@@ -202,7 +202,7 @@ export default function DashboardPage() {
     };
 
     try {
-      const response = await fetchWithAuth(`http://localhost:5000/api/tasks/${editingTaskId}`, {
+      const response = await fetchWithAuth(`/api/tasks/${editingTaskId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -262,7 +262,7 @@ export default function DashboardPage() {
     
     setIsDeleting(taskId);
     try {
-      await fetchWithAuth(`http://localhost:5000/api/tasks/${taskId}`, {
+      await fetchWithAuth(`/api/tasks/${taskId}`, {
         method: 'DELETE'
       });
       setTimeout(() => {
@@ -334,7 +334,7 @@ export default function DashboardPage() {
     };
 
     try {
-      const response = await fetchWithAuth('http://localhost:5000/api/tasks', {
+      const response = await fetchWithAuth('/api/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

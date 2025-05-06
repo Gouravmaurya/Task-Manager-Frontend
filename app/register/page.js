@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiUrl } from '../../lib/config';
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -20,7 +21,7 @@ export default function RegisterPage() {
     setError(''); // Clear previous errors
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/register', {
+      const response = await fetch(`${apiUrl}/api/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
