@@ -351,7 +351,14 @@ export default function DashboardPage() {
         method: 'DELETE'
       });
       setTimeout(() => {
-        setTasks(prev => prev.filter(task => task._id !== taskId));
+        setTasks(prev => {
+          // Ensure prev is an array before filtering
+          if (!Array.isArray(prev)) {
+            console.error('Tasks is not an array:', prev);
+            return [];
+          }
+          return prev.filter(task => task._id !== taskId);
+        });
         setIsDeleting(null);
       }, 300);
     } catch (error) {
@@ -469,6 +476,12 @@ export default function DashboardPage() {
   const getFilteredTasks = () => {
     if (!user) return [];
     
+    // Ensure tasks is always an array
+    if (!Array.isArray(tasks)) {
+      console.error('Tasks is not an array:', tasks);
+      return [];
+    }
+    
     const today = new Date();
     const searchLower = searchQuery.toLowerCase();
     
@@ -527,14 +540,23 @@ export default function DashboardPage() {
   const addNotification = (notification) => {
     console.log('Adding notification to state:', notification); // Debug log
     setNotifications(prev => {
-      const newNotifications = [notification, ...prev];
+      // Ensure prev is an array
+      const prevArray = Array.isArray(prev) ? prev : [];
+      const newNotifications = [notification, ...prevArray];
       console.log('New notifications state:', newNotifications); // Debug log
       return newNotifications;
     });
   };
 
   const removeNotification = (id) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
+    setNotifications(prev => {
+      // Ensure prev is an array before filtering
+      if (!Array.isArray(prev)) {
+        console.error('Notifications is not an array:', prev);
+        return [];
+      }
+      return prev.filter(notification => notification.id !== id);
+    });
   };
 
   const markNotificationAsRead = (id) => {
