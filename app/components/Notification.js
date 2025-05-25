@@ -9,16 +9,19 @@ export default function Notification({
   onMarkAllAsRead,
   unreadCount 
 }) {
+  // Ensure notifications is always an array
+  const notificationsArray = Array.isArray(notifications) ? notifications : [];
+
   useEffect(() => {
     // Auto-remove notifications after 5 seconds
-    notifications.forEach(notification => {
+    notificationsArray.forEach(notification => {
       if (!notification.read) {
         setTimeout(() => {
           onClose(notification.id);
         }, 5000);
       }
     });
-  }, [notifications, onClose]);
+  }, [notificationsArray, onClose]);
 
   const getNotificationColor = (type) => {
     switch (type) {
@@ -46,7 +49,7 @@ export default function Notification({
 
   return (
     <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full">
-      {notifications.length > 0 && (
+      {notificationsArray.length > 0 && (
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
             <Bell size={16} className="text-white/70" />
@@ -66,7 +69,7 @@ export default function Notification({
         </div>
       )}
       <AnimatePresence>
-        {notifications.map((notification) => (
+        {notificationsArray.map((notification) => (
           <motion.div
             key={notification.id}
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
