@@ -10,7 +10,7 @@ export default function Notification({
   unreadCount 
 }) {
   // Ensure notifications is always an array
-  const notificationsArray = Array.isArray(notifications) ? notifications : [];
+  const notificationsArray = Array.isArray(notifications) ? notifications : (notifications ? [notifications] : []);
 
   useEffect(() => {
     // Auto-remove notifications after 5 seconds
